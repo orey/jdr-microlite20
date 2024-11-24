@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Personnage Microlite20</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button-group .generate-button {
+            background-color: #28a745;
+            color: white;
+        }
+        .button-group .export-button {
+            background-color: #007bff;
+            color: white;
+        }
+        .button-group .import-button {
+            background-color: #ffc107;
+            color: white;
+        }
+        .character-output {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .character-output pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de Personnage Microlite20</h1>
+        <div class="input-group">
+            <label for="name">Nom :</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="input-group">
+            <label for="race">Race :</label>
+            <select id="race" required>
+                <option value="Humain">Humain</option>
+                <option value="Elfe">Elfe</option>
+                <option value="Nain">Nain</option>
+                <option value="Halfelin">Halfelin</option>
+                <option value="Psion">Psion</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="classe">Classe :</label>
+            <select id="classe" required>
+                <option value="Guerrier">Guerrier</option>
+                <option value="Voleur">Voleur</option>
+                <option value="Mage">Mage</option>
+                <option value="Clerc">Clerc</option>
+                <option value="Psioniste">Psioniste</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="level">Niveau :</label>
+            <input type="number" id="level" required>
+        </div>
+        <div class="button-group">
+            <button class="generate-button" onclick="generateCharacter()">Générer Personnage</button>
+            <button class="export-button" onclick="exportCharacter()">Exporter en JSON</button>
+            <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importCharacter(event)">
+            <button class="import-button" onclick="document.getElementById('importFile').click()">Importer JSON</button>
+        </div>
+        <div class="character-output" id="characterOutput">
+            <pre id="characterJson"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour lancer 4d6 et ignorer le dé le plus bas
+        function roll4d6DropLowest() {
+            let rolls = [];
+            for (let i = 0; i < 4; i++) {
+                rolls.push(Math.floor(Math.random() * 6) + 1);
+            }
+            rolls.sort((a, b) => a - b);
+            rolls.shift(); // Enlève le dé le plus bas
+            return rolls.reduce((a, b) => a + b, 0);
+        }
+
+        // Fonction pour calculer le bonus de statistique
+        function calculateStatBonus(stat) {
+            return Math.floor((stat - 10) / 2);
+        }
+
+        // Fonction pour générer les statistiques d'un personnage
+        function generateStats() {
+            let stats = { FOR: 0, DEX: 0, ESP: 0, PSY: 0 };
+            for (let stat in stats) {
+                stats[stat] = roll4d6DropLowest();
+            }
+            return stats;
+        }
+
+        // Fonction pour générer les compétences d'un personnage
+        function generateSkills(level, race, classe) {
+            let skills = { Physique: 0, Subterfuge: 0, Connaissance: 0, Communication: 0, Psychisme: 0 };
+            for (let skill in skills) {
+                skills[skill] = level;
+                if (race === 'Humain') {
+                    skills[skill] += 1;
+                } else if (race === 'Elfe' && skill === 'Connaissance') {
+                    skills[skill] += 2;
+                } else if (race === 'Nain' && skill === 'Physique') {
+                    skills[skill] += 2;
+                } else if (race === 'Halfelin' && skill === 'Subterfuge') {
+                    skills[skill] += 2;
+                } else if (race === 'Psion' && skill === 'Psychisme') {
+                    skills[skill] += 2;
+                }
+                if (classe === 'Guerrier' && skill === 'Physique') {
+                    skills[skill] += 3;
+                } else if (classe === 'Voleur' && skill === 'Subterfuge') {
+                    skills[skill] += 3;
+                } else if (classe === 'Mage' && skill === 'Connaissance') {
+                    skills[skill] += 3;
+                } else if (classe === 'Clerc' && skill === 'Communication') {
+                    skills[skill] += 3;
+                } else if (classe === 'Psioniste' && skill === 'Psychisme') {
+                    skills[skill] += 3;
+                }
+            }
+            return skills;
+        }
+
+        // Fonction pour générer les pouvoirs psychiques d'un personnage
+        function generatePsychicPowers(level, psyStat) {
+            let powers = [];
+            let maxPowerLevel = Math.floor((level + 1) / 2);
+            if (psyStat >= 10) {
+                powers.push('Transit');
+            }
+            if (psyStat >= 15) {
+                powers.push('Transfert d\'Esprit');
+            }
+            return powers;
+        }
+
+        // Fonction pour générer un personnage
+        function generateCharacter() {
+            let name = document.getElementById('name').value;
+            let race = document.getElementById('race').value;
+            let classe = document.getElementById('classe').value;
+            let level = parseInt(document.getElementById('level').value);
+
+            let stats = generateStats();
+            let skills = generateSkills(level, race, classe);
+            let psychicPowers = generatePsychicPowers(level, stats.PSY);
+
+            let character = {
+                Nom: name,
+                Race: race,
+                Classe: classe,
+                Niveau: level,
+                Statistiques: stats,
+                Compétences: skills,
+                PouvoirsPsychiques: psychicPowers,
+                PV: stats.FOR + roll4d6DropLowest() * level,
+                CA: 10 + calculateStatBonus(stats.DEX)
+            };
+
+            document.getElementById('characterJson').textContent = JSON.stringify(character, null, 2);
+        }
+
+        // Fonction pour exporter le personnage en JSON
+        function exportCharacter() {
+            let characterJson = document.getElementById('characterJson').textContent;
+            let blob = new Blob([characterJson], { type: 'application/json' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'personnage.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Fonction pour importer un personnage à partir d'un fichier JSON
+        function importCharacter(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let characterJson = e.target.result;
+                document.getElementById('characterJson').textContent = characterJson;
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>

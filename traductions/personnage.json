@@ -1,0 +1,22 @@
+{
+  "Nom": "Lira Al Zahim",
+  "Race": "Elfe",
+  "Classe": "Guerrier",
+  "Niveau": 1,
+  "Statistiques": {
+    "FOR": 12,
+    "DEX": 9,
+    "ESP": 13,
+    "PSY": 5
+  },
+  "Compétences": {
+    "Physique": 4,
+    "Subterfuge": 1,
+    "Connaissance": 3,
+    "Communication": 1,
+    "Psychisme": 1
+  },
+  "PouvoirsPsychiques": [],
+  "PV": 26,
+  "CA": 9
+}

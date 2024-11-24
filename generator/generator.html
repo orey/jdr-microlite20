@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microlite20 Character Creator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Microlite20 Character Creator</h1>
+        <form id="characterForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="race">Race:</label>
+            <select id="race" name="race" required>
+                <option value="human">Human</option>
+                <option value="elf">Elf</option>
+                <option value="dwarf">Dwarf</option>
+                <option value="halfling">Halfling</option>
+            </select>
+
+            <label for="class">Class:</label>
+            <select id="class" name="class" required>
+                <option value="fighter">Fighter</option>
+                <option value="rogue">Rogue</option>
+                <option value="mage">Mage</option>
+                <option value="cleric">Cleric</option>
+            </select>
+
+            <label for="level">Level:</label>
+            <select id="level" name="level" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+            </select>
+
+            <button type="button" onclick="generateCharacter()">Generate Character</button>
+        </form>
+
+        <div id="characterSheet" class="hidden">
+            <h2>Character Sheet</h2>
+            <div id="characterDetails"></div>
+            <button type="button" onclick="exportCharacter()">Export Character</button>
+            <button type="button" onclick="importCharacter()">Import Character</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
